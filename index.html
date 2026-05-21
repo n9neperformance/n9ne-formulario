@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N9NE | Análise de Qualificação</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #0D1128;
+  --bg2:   #111827;
+  --bg3:   #151F35;
+  --green: #34D399;
+  --teal:  #06B6D4;
+  --blue:  #3B82F6;
+  --text:  #E8EFF8;
+  --muted: #6B7A99;
+  --dim:   #2D3A55;
+  --border: rgba(6,182,212,0.18);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg) !important;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* GLOWS */
+.glow1 {
+  position: fixed; top: -180px; right: -120px;
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+.glow2 {
+  position: fixed; bottom: -180px; left: -120px;
+  width: 440px; height: 440px;
+  background: radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+
+/* LAYOUT */
+.wrap {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 600px;
+  margin: 0 auto;
+  padding: 44px 24px 80px;
+}
+
+/* HEADER */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 36px;
+}
+.logo { display: flex; flex-direction: column; }
+.logo-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900; font-size: 20px; letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 50%, var(--green) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.logo-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700; font-size: 8px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  margin-top: 2px;
+}
+.badge {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 100px; padding: 5px 14px;
+  transition: all 0.3s;
+}
+
+/* PROGRESS */
+.progress-track {
+  width: 100%; height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px; margin-bottom: 44px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--green));
+  border-radius: 2px;
+  transition: width 0.55s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 14px rgba(6,182,212,0.45);
+}
+
+/* STEPS */
+.step { display: none; }
+.step.active { display: block; animation: fadeUp 0.38s ease both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* TAG */
+.tag {
+  display: inline-block;
+  background: rgba(6,182,212,0.1);
+  border: 1px solid rgba(6,182,212,0.25);
+  border-radius: 100px; padding: 5px 14px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #67E8F9;
+  margin-bottom: 22px;
+}
+
+.counter {
+  font-size: 10px; font-weight: 600;
+  color: rgba(103,232,249,0.45);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.q-label {
+  font-size: 10px; font-weight: 600;
+  color: #67E8F9; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+
+/* HEADINGS */
+h1, h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 4.5vw, 30px);
+  line-height: 1.18; color: #FFFFFF;
+  margin-bottom: 14px;
+}
+.grad {
+  background: linear-gradient(135deg, var(--blue), var(--teal), var(--green));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.divider {
+  width: 36px; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--green));
+  border-radius: 2px; margin: 22px 0;
+  box-shadow: 0 0 8px rgba(6,182,212,0.4);
+}
+
+.subtitle {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.68; margin-bottom: 36px;
+}
+
+
+/* INPUTS */
+.field { margin-bottom: 10px; }
+input[type=text], input[type=tel], textarea {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 14px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: block;
+}
+input[type=text]::placeholder, input[type=tel]::placeholder, textarea::placeholder { color: var(--dim); }
+input[type=text]:focus, input[type=tel]:focus, textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(6,182,212,0.1);
+}
+textarea { resize: none; min-height: 108px; }
+
+/* OPTIONS */
+.opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+.opt {
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 14px 18px;
+  cursor: pointer; display: flex; align-items: center; gap: 13px;
+  font-size: 15px; color: #AAB8CC;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  user-select: none;
+}
+.opt:hover { border-color: rgba(6,182,212,0.35); background: var(--bg3); color: var(--text); }
+.opt.on  { border-color: var(--teal); background: rgba(6,182,212,0.07); color: #FFFFFF; }
+
+.dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--dim); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.opt.on .dot { border-color: var(--teal); background: linear-gradient(135deg, var(--blue), var(--teal)); }
+.opt.on .dot::after { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+
+.chk {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1.5px solid var(--dim); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; font-size: 11px; color: transparent; font-weight: 700;
+}
+.opt.on .chk { border-color: var(--teal); background: linear-gradient(135deg, var(--blue), var(--teal)); color: #fff; }
+
+/* INFO BOX */
+.infobox {
+  background: var(--bg2);
+  border: 1px solid rgba(6,182,212,0.14);
+  border-left: 3px solid var(--teal);
+  border-radius: 10px; padding: 16px 20px;
+  margin-bottom: 28px;
+  font-size: 14px; line-height: 1.72; color: var(--muted);
+}
+
+/* BUTTONS */
+.btn {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 60%, var(--green) 100%);
+  color: #fff; border: none; border-radius: 10px;
+  padding: 14px 28px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.25s;
+  display: inline-flex; align-items: center; gap: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 22px rgba(6,182,212,0.28);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(6,182,212,0.42); filter: brightness(1.08); }
+.btn:active { transform: translateY(0); }
+
+.btn-ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: none; font-size: 11px;
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.18); box-shadow: none; filter: none; transform: none; }
+
+.btn-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+/* FINAL */
+.final-icon { font-size: 42px; margin-bottom: 20px; }
+.final-text { font-size: 15px; color: var(--muted); line-height: 1.78; margin-bottom: 30px; max-width: 480px; }
+.final-text strong { color: #C8D8EE; }
+.whisper { font-size: 12px; color: var(--dim); margin-top: 14px; }
+
+@media (max-width: 480px) {
+  .wrap { padding: 32px 16px 64px; }
+  h1, h2 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+<div class="glow1"></div>
+<div class="glow2"></div>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-name">N9NE</div>
+      <div class="logo-sub">Performance Empresarial</div>
+    </div>
+    <div class="badge" id="badge">Qualificação</div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="prog"></div>
+  </div>
+
+  <!-- 0: INTRO -->
+  <div class="step active" id="s0">
+    <div class="tag">Análise de Perfil</div>
+    <h1>Crescimento não é sorte.<br>É <span class="grad">sistema.</span></h1>
+    <div class="divider"></div>
+    <p class="subtitle">Antes de qualquer conversa, precisamos entender a sua realidade para saber se conseguimos gerar resultado de verdade no seu negócio.<br><br>Responda com honestidade — leva menos de 3 minutos.</p>
+    <button class="btn" onclick="go(1)">Iniciar análise →</button>
+  </div>
+
+  <!-- 1: IDENTIFICAÇÃO -->
+  <div class="step" id="s1">
+    <div class="counter">1 de 8</div>
+    <div class="q-label">Identificação</div>
+    <h2>Quem é <span class="grad">você?</span></h2>
+    <div class="field"><input type="text" id="nome" placeholder="Seu nome completo" /></div>
+    <div class="field"><input type="text" id="empresa" placeholder="Nome da empresa" /></div>
+    <div class="field"><input type="tel" id="whatsapp" placeholder="WhatsApp com DDD" /></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(0)">← Voltar</button>
+      <button class="btn" onclick="go(2)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 2: SEGMENTO -->
+  <div class="step" id="s2">
+    <div class="counter">2 de 8</div>
+    <div class="q-label">Segmento</div>
+    <h2>Qual é o seu <span class="grad">mercado?</span></h2>
+    <div class="opts" id="g-seg">
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Saúde, clínicas e estética</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Educação e infoprodutos</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Serviços locais e B2B</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Varejo e e-commerce</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Imóveis e construção</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Alimentação e franquias</div>
+      <div class="opt" onclick="pick(this,'g-seg')"><div class="dot"></div>Outro segmento</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(1)">← Voltar</button>
+      <button class="btn" onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 3: MATURIDADE -->
+  <div class="step" id="s3">
+    <div class="counter">3 de 8</div>
+    <div class="q-label">Maturidade</div>
+    <h2>Há quanto tempo no <span class="grad">mercado?</span></h2>
+    <div class="opts" id="g-mat">
+      <div class="opt" onclick="pick(this,'g-mat')"><div class="dot"></div>Menos de 1 ano</div>
+      <div class="opt" onclick="pick(this,'g-mat')"><div class="dot"></div>1 a 3 anos</div>
+      <div class="opt" onclick="pick(this,'g-mat')"><div class="dot"></div>3 a 7 anos</div>
+      <div class="opt" onclick="pick(this,'g-mat')"><div class="dot"></div>Mais de 7 anos</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(2)">← Voltar</button>
+      <button class="btn" onclick="go(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 4: AQUISIÇÃO -->
+  <div class="step" id="s4">
+    <div class="counter">4 de 8</div>
+    <div class="q-label">Aquisição atual</div>
+    <h2>Como você <span class="grad">adquire clientes</span> hoje?</h2>
+    <p class="subtitle" style="margin-bottom:18px">Pode selecionar mais de uma opção.</p>
+    <div class="opts" id="g-aq">
+      <div class="opt" onclick="multi(this)"><div class="chk">✓</div>Indicação de clientes</div>
+      <div class="opt" onclick="multi(this)"><div class="chk">✓</div>Anúncios pagos (Meta, Google)</div>
+      <div class="opt" onclick="multi(this)"><div class="chk">✓</div>Redes sociais orgânico</div>
+      <div class="opt" onclick="multi(this)"><div class="chk">✓</div>Prospecção ativa</div>
+      <div class="opt" onclick="multi(this)"><div class="chk">✓</div>Não tenho processo definido</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(3)">← Voltar</button>
+      <button class="btn" onclick="go(5)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 5: OBSTÁCULO -->
+  <div class="step" id="s5">
+    <div class="counter">5 de 8</div>
+    <div class="q-label">Desafio atual</div>
+    <h2>Qual é o seu maior <span class="grad">obstáculo</span> hoje?</h2>
+    <p class="subtitle" style="margin-bottom:16px">Seja específico — essa resposta define como chegamos preparados para a sua realidade.</p>
+    <textarea id="obstaculo" placeholder="Ex: Meu faturamento é inconsistente, dependo de indicação e não tenho previsibilidade..."></textarea>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-ghost" onclick="go(4)">← Voltar</button>
+      <button class="btn" onclick="go(6)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 6: FATURAMENTO -->
+  <div class="step" id="s6">
+    <div class="counter">6 de 8</div>
+    <div class="q-label">Faturamento</div>
+    <h2>Faturamento médio <span class="grad">mensal?</span></h2>
+    <div class="opts" id="g-fat">
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>Até R$40.000</div>
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>R$40.000 a R$50.000</div>
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>R$50.000 a R$80.000</div>
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>R$80.000 a R$150.000</div>
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>Acima de R$150.000</div>
+      <div class="opt" onclick="pick(this,'g-fat')"><div class="dot"></div>Prefiro não informar</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(5)">← Voltar</button>
+      <button class="btn" onclick="go(7)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 7: HISTÓRICO -->
+  <div class="step" id="s7">
+    <div class="counter">7 de 8</div>
+    <div class="q-label">Histórico</div>
+    <h2>Já investiu em <span class="grad">marketing digital?</span></h2>
+    <div class="opts" id="g-mkt">
+      <div class="opt" onclick="pick(this,'g-mkt')"><div class="dot"></div>Sim, tive bons resultados</div>
+      <div class="opt" onclick="pick(this,'g-mkt')"><div class="dot"></div>Sim, mas sem retorno claro</div>
+      <div class="opt" onclick="pick(this,'g-mkt')"><div class="dot"></div>Nunca investi</div>
+      <div class="opt" onclick="pick(this,'g-mkt')"><div class="dot"></div>Estou começando a considerar</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(6)">← Voltar</button>
+      <button class="btn" onclick="go(8)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 8: INVESTIMENTO EM MÍDIA -->
+  <div class="step" id="s8">
+    <div class="counter">8 de 8</div>
+    <div class="q-label">Disponibilidade</div>
+    <h2>Quanto pode investir em <span class="grad">mídia paga</span> por mês?</h2>
+    <p class="subtitle" style="margin-bottom:18px">Esse valor é exclusivo para anúncios — não inclui a gestão.</p>
+    <div class="opts" id="g-inv">
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>Até R$3.000</div>
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>R$4.000 a R$5.000</div>
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>R$5.000 a R$8.000</div>
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>R$8.000 a R$15.000</div>
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>Acima de R$15.000</div>
+      <div class="opt" onclick="pick(this,'g-inv')"><div class="dot"></div>Ainda não sei</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go(7)">← Voltar</button>
+      <button class="btn" onclick="submit()">Enviar análise →</button>
+    </div>
+  </div>
+
+  <!-- FINAL: QUALIFICADO -->
+  <div class="step" id="f-top">
+    <div class="final-icon">🚀</div>
+    <div class="tag">Perfil qualificado</div>
+    <h2>Seu negócio tem <span class="grad">tudo certo</span> pra isso.</h2>
+    <div class="divider"></div>
+    <p class="final-text">Analisamos suas respostas e acreditamos que conseguimos gerar resultado real na sua operação.<br><br>Nossa equipe entrará em contato em até <strong>24 horas</strong> para uma conversa estratégica sem compromisso — queremos entender sua operação a fundo antes de qualquer proposta.</p>
+    <p class="whisper">📱 Fique de olho no seu WhatsApp.</p>
+  </div>
+
+  <!-- FINAL: EM ANÁLISE -->
+  <div class="step" id="f-med">
+    <div class="final-icon">📋</div>
+    <div class="tag">Em análise</div>
+    <h2>Recebemos suas <span class="grad">respostas.</span></h2>
+    <div class="divider"></div>
+    <p class="final-text">Seu perfil tem potencial. Estamos analisando com atenção para entender se conseguimos entregar o resultado que você merece.<br><br>Se fizer sentido dos dois lados, entraremos em contato em até <strong>48 horas.</strong></p>
+    <p class="whisper">📱 Fique de olho no seu WhatsApp.</p>
+  </div>
+
+  <!-- FINAL: INVESTIMENTO BAIXO -->
+  <div class="step" id="f-inv">
+    <div class="final-icon">💡</div>
+    <h2>Agradecemos pelo seu <span class="grad">tempo.</span></h2>
+    <div class="divider"></div>
+    <p class="final-text">Para montar e executar um sistema de aquisição que realmente funciona, existe um investimento mínimo em mídia — não porque queremos cobrar mais, mas porque abaixo disso os resultados não justificam o esforço de nenhum dos dois lados.<br><br>Esse pode não ser o melhor momento. Mas o caminho até lá é construível — e quando você chegar lá, estaremos aqui.</p>
+    <a href="https://instagram.com/n9ne.performance" class="btn">Acompanhar a N9NE →</a>
+  </div>
+
+  <!-- FINAL: FORA DO PERFIL -->
+  <div class="step" id="f-nao">
+    <div class="final-icon">🌱</div>
+    <h2>Agradecemos pelo seu <span class="grad">tempo.</span></h2>
+    <div class="divider"></div>
+    <p class="final-text">A N9NE trabalha com estruturas completas de aquisição — e para que isso gere retorno real, o negócio precisa estar em um estágio específico de crescimento.<br><br>Pelo seu momento atual, acreditamos que você ainda não teria o resultado que merece com nossa solução.<br><br>Isso não é um não definitivo — é um <strong>ainda não.</strong> Acompanhe nosso conteúdo e quando o momento chegar, estaremos prontos.</p>
+    <a href="https://instagram.com/n9ne.performance" class="btn">Acompanhar a N9NE →</a>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 8;
+let cur = 0;
+const ans = {};
+
+// ← TROQUE PELO SEU NÚMERO (DDI + DDD + número, sem símbolos)
+const SEU_WHATSAPP = '5511999999999';
+
+function go(n) {
+  document.getElementById('s' + cur).classList.remove('active');
+  cur = n;
+  document.getElementById('s' + cur).classList.add('active');
+  document.getElementById('prog').style.width = (cur / TOTAL * 100) + '%';
+  document.getElementById('badge').textContent = cur === 0 ? 'Qualificação' : cur + ' de ' + TOTAL;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pick(el, group) {
+  document.querySelectorAll('#' + group + ' .opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+  ans[group] = el.textContent.trim();
+}
+
+function multi(el) { el.classList.toggle('on'); }
+
+function getMulti(group) {
+  const sel = [];
+  document.querySelectorAll('#' + group + ' .opt.on').forEach(o => sel.push(o.textContent.trim()));
+  return sel.join(', ') || 'Não informado';
+}
+
+function qualifica() {
+  const fat = ans['g-fat'] || '';
+  const inv = ans['g-inv'] || '';
+
+  // Faturamento abaixo do mínimo ou não informado → fora do perfil
+  if (!fat || fat === 'Até R$40.000' || fat === 'Prefiro não informar') return 'f-nao';
+
+  // Mídia insuficiente ou não sabe → investimento baixo
+  if (!inv || inv === 'Até R$3.000' || inv === 'Ainda não sei') return 'f-inv';
+
+  // Mídia na faixa mínima → em análise
+  if (inv === 'R$4.000 a R$5.000') return 'f-med';
+
+  // Mídia acima de 5k → qualificado
+  return 'f-top';
+}
+
+function enviaWhatsApp(destino) {
+  const nome      = document.getElementById('nome').value || 'Não informado';
+  const empresa   = document.getElementById('empresa').value || 'Não informado';
+  const whatsapp  = document.getElementById('whatsapp').value || 'Não informado';
+  const obstaculo = document.getElementById('obstaculo').value || 'Não informado';
+  const aquisicao = getMulti('g-aq');
+
+  const perfil = {
+    'f-top': '✅ QUALIFICADO — Contato em 24h',
+    'f-med': '⏳ EM ANÁLISE — Contato em 48h',
+    'f-inv': '⚠️ INVESTIMENTO BAIXO',
+    'f-nao': '❌ FORA DO PERFIL'
+  }[destino];
+
+  const msg =
+`🔔 *NOVO LEAD — N9NE*
+
+*PERFIL:* ${perfil}
+
+👤 *Nome:* ${nome}
+🏢 *Empresa:* ${empresa}
+📱 *WhatsApp:* ${whatsapp}
+
+📊 *Segmento:* ${ans['g-seg'] || 'Não informado'}
+📅 *Tempo de mercado:* ${ans['g-mat'] || 'Não informado'}
+🎯 *Aquisição atual:* ${aquisicao}
+
+💰 *Faturamento mensal:* ${ans['g-fat'] || 'Não informado'}
+📣 *Verba em mídia:* ${ans['g-inv'] || 'Não informado'}
+📈 *Histórico em marketing:* ${ans['g-mkt'] || 'Não informado'}
+
+🧩 *Maior obstáculo:*
+${obstaculo}`;
+
+  window.open('https://wa.me/' + SEU_WHATSAPP + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function submit() {
+  const destino = qualifica();
+  document.getElementById('s8').classList.remove('active');
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('badge').textContent = 'Concluído';
+  document.getElementById(destino).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (destino === 'f-top' || destino === 'f-med') {
+    setTimeout(() => enviaWhatsApp(destino), 800);
+  }
+}
+</script>
+</body>
+</html>
