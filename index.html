@@ -461,8 +461,8 @@ const TOTAL = 8;
 let cur = 0;
 const ans = {};
 
-// ← TROQUE PELO SEU NÚMERO (DDI + DDD + número, sem símbolos)
-const SEU_WHATSAPP = '5511999999999';
+
+
 
 function go(n) {
   document.getElementById('s' + cur).classList.remove('active');
@@ -504,41 +504,33 @@ function qualifica() {
   return 'f-top';
 }
 
-function enviaWhatsApp(destino) {
-  const nome      = document.getElementById('nome').value || 'Não informado';
-  const empresa   = document.getElementById('empresa').value || 'Não informado';
-  const whatsapp  = document.getElementById('whatsapp').value || 'Não informado';
-  const obstaculo = document.getElementById('obstaculo').value || 'Não informado';
-  const aquisicao = getMulti('g-aq');
-
+async function enviaEmail(destino) {
   const perfil = {
-    'f-top': '✅ QUALIFICADO — Contato em 24h',
-    'f-med': '⏳ EM ANÁLISE — Contato em 48h',
-    'f-inv': '⚠️ INVESTIMENTO BAIXO',
-    'f-nao': '❌ FORA DO PERFIL'
+    'f-top': 'QUALIFICADO — Contato em 24h',
+    'f-med': 'EM ANÁLISE — Contato em 48h'
   }[destino];
 
-  const msg =
-`🔔 *NOVO LEAD — N9NE*
+  const data = {
+    _replyto: document.getElementById('whatsapp').value,
+    _subject: '🔔 NOVO LEAD N9NE — ' + perfil,
+    'PERFIL': perfil,
+    'Nome': document.getElementById('nome').value || 'Não informado',
+    'Empresa': document.getElementById('empresa').value || 'Não informado',
+    'WhatsApp': document.getElementById('whatsapp').value || 'Não informado',
+    'Segmento': ans['g-seg'] || 'Não informado',
+    'Tempo de mercado': ans['g-mat'] || 'Não informado',
+    'Aquisição atual': getMulti('g-aq'),
+    'Faturamento mensal': ans['g-fat'] || 'Não informado',
+    'Verba em mídia': ans['g-inv'] || 'Não informado',
+    'Histórico em marketing': ans['g-mkt'] || 'Não informado',
+    'Maior obstáculo': document.getElementById('obstaculo').value || 'Não informado'
+  };
 
-*PERFIL:* ${perfil}
-
-👤 *Nome:* ${nome}
-🏢 *Empresa:* ${empresa}
-📱 *WhatsApp:* ${whatsapp}
-
-📊 *Segmento:* ${ans['g-seg'] || 'Não informado'}
-📅 *Tempo de mercado:* ${ans['g-mat'] || 'Não informado'}
-🎯 *Aquisição atual:* ${aquisicao}
-
-💰 *Faturamento mensal:* ${ans['g-fat'] || 'Não informado'}
-📣 *Verba em mídia:* ${ans['g-inv'] || 'Não informado'}
-📈 *Histórico em marketing:* ${ans['g-mkt'] || 'Não informado'}
-
-🧩 *Maior obstáculo:*
-${obstaculo}`;
-
-  window.open('https://wa.me/' + SEU_WHATSAPP + '?text=' + encodeURIComponent(msg), '_blank');
+  await fetch('https://formspree.io/f/meedgavv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 function submit() {
@@ -549,7 +541,7 @@ function submit() {
   document.getElementById(destino).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (destino === 'f-top' || destino === 'f-med') {
-    setTimeout(() => enviaWhatsApp(destino), 800);
+    enviaEmail(destino);
   }
 }
 </script>
